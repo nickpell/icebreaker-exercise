@@ -21,8 +21,10 @@ def get_unmatched_and_next_matches(user_ids, match_history):
 def get_optimal_matches(user_to_unmatched, user_to_next_match):
     matches = []
     users_to_match = set(user_to_next_match)
+    # break ties by user id for deterministic tests
     users_by_most_matched = sorted(user_to_next_match,
-        key=lambda user: len(user_to_next_match[user]), reverse=True)
+        key=lambda user: (len(user_to_next_match[user]), user), reverse=True)
+
     for next_user_to_match in users_by_most_matched:
         if next_user_to_match not in users_to_match:
             continue
@@ -37,10 +39,19 @@ def get_optimal_matches(user_to_unmatched, user_to_next_match):
     return matches
 
 
-print('Given examples:')
-print(match(['A', 'B', 'C', 'D'], []))
-print(match(['A', 'B', 'C', 'D'], [['A', 'C'], ['B', 'D']]))
-print(match(['A', 'B', 'C', 'D'], [['A', 'C'], ['B', 'D'], ['A', 'B'], ['C', 'D']]))
-print(match(['A', 'B', 'C', 'D'], [['A', 'C'], ['B', 'D'], ['A', 'B'], ['C', 'D'], ['A', 'D'], ['C', 'B']]))
-print('Other examples:')
-print(match(['A', 'B', 'C', 'D'], [['A', 'B'], ['A', 'C']]))
+def run_test(user_ids, match_history, expected_matching):
+    assert match(user_ids, match_history) == expected_matching, expected_matching
+
+# Tests based on the given sequences
+run_test(['A', 'B', 'C', 'D'], [],
+         [['D', 'C'], ['B', 'A']])
+run_test(['A', 'B', 'C', 'D'], [['D', 'C'], ['B', 'A']],
+         [['D', 'B'], ['C', 'A']])
+run_test(['A', 'B', 'C', 'D'], [['D', 'C'], ['B', 'A'], ['D', 'B'], ['C', 'A']],
+         [['D', 'A'], ['C', 'B']])
+run_test(['A', 'B', 'C', 'D'], [['D', 'C'], ['B', 'A'], ['D', 'B'], ['C', 'A'], ['D', 'A'], ['C', 'B']],
+         [['D', 'C'], ['B', 'A']])
+
+# Other sequences:
+run_test(['A', 'B', 'C', 'D'], [['A', 'B'], ['A', 'C']],
+         [['A', 'D'], ['C', 'B']])
