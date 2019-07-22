@@ -9,6 +9,9 @@ def get_unmatched_and_next_matches(user_ids, match_history):
     for historical_match in reversed(match_history):
         user_1 = historical_match[0]
         user_2 = historical_match[1]
+        # These two if-blocks are a candidate for de-duplication via a helper function.
+        # I prefer using the rule of 3 - only de-duplicate if code is repeated 3 times, but you could
+        # make a case for de-duplicating here.
         if user_2 in user_to_unmatched[user_1]:
             user_to_unmatched[user_1].remove(user_2)
             user_to_next_match[user_1].insert(0, user_2)
@@ -22,6 +25,9 @@ def get_optimal_matches(user_to_unmatched, user_to_next_match):
     matches = []
     users_to_match = set(user_to_next_match)
     # break ties by user id for deterministic tests
+    # TODO - refactor this into helper function and use Python's mock library to guarantee
+    # deterministic sorting.  In production, we might not need this function to be deterministic,
+    # and providing a second sort key (user) adds overhead.
     users_by_most_matched = sorted(user_to_next_match,
         key=lambda user: (len(user_to_next_match[user]), user), reverse=True)
 
@@ -39,6 +45,7 @@ def get_optimal_matches(user_to_unmatched, user_to_next_match):
     return matches
 
 
+# TODO - use Python's unittest framework
 def run_test(user_ids, match_history, expected_matching):
     assert match(user_ids, match_history) == expected_matching, match(user_ids, match_history)
 
