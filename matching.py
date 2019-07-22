@@ -11,22 +11,27 @@ def match(user_ids, match_history):
             user_to_unmatched[user_2].remove(user_1)
             user_to_next_match[user_2].insert(0, user_1)
         # TODO - break if each user has been matched with each other user
+
     matches = []
     users_to_match = set(user_ids)
-    while users_to_match:
-        next_user_to_match = users_to_match.pop()
+    users_by_most_matched = sorted(users_to_match, key=lambda user: len(user_to_next_match[user]), reverse=True)
+    for next_user_to_match in users_by_most_matched:
+        if next_user_to_match not in users_to_match:
+            continue
+        users_to_match.remove(next_user_to_match)
         unmatched_users = user_to_unmatched[next_user_to_match] & users_to_match
         if unmatched_users:
-            matched_user = unmatched_users.pop()
+            matched_user = next(filter(lambda user: user in unmatched_users, users_by_most_matched))
         else:
-            matched_user = user_to_next_match[next_user_to_match][0]
-        # print((next_user_to_match, matched_user))
+            matched_user = next(filter(lambda user: user in users_to_match, user_to_next_match[next_user_to_match]))
         users_to_match.remove(matched_user)
         matches.append([next_user_to_match, matched_user])
     return matches
 
-
+print('Given tests:')
 print(match(['A', 'B', 'C', 'D'], []))
 print(match(['A', 'B', 'C', 'D'], [['A', 'C'], ['B', 'D']]))
 print(match(['A', 'B', 'C', 'D'], [['A', 'C'], ['B', 'D'], ['A', 'B'], ['C', 'D']]))
 print(match(['A', 'B', 'C', 'D'], [['A', 'C'], ['B', 'D'], ['A', 'B'], ['C', 'D'], ['A', 'D'], ['C', 'B']]))
+print('Other tests:')
+print(match(['A', 'B', 'C', 'D'], [['A', 'B'], ['A', 'C']]))
