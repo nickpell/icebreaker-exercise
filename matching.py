@@ -40,7 +40,7 @@ def get_optimal_matches(user_to_unmatched, user_to_next_match):
 
 
 def run_test(user_ids, match_history, expected_matching):
-    assert match(user_ids, match_history) == expected_matching, expected_matching
+    assert match(user_ids, match_history) == expected_matching, match(user_ids, match_history)
 
 # Tests based on the given sequences
 run_test(['A', 'B', 'C', 'D'], [],
@@ -53,5 +53,13 @@ run_test(['A', 'B', 'C', 'D'], [['D', 'C'], ['B', 'A'], ['D', 'B'], ['C', 'A'], 
          [['D', 'C'], ['B', 'A']])
 
 # Other sequences:
+
+# Partial histories
 run_test(['A', 'B', 'C', 'D'], [['A', 'B'], ['A', 'C']],
          [['A', 'D'], ['C', 'B']])
+run_test(['A', 'B', 'C', 'D'], [['A', 'B'], ['A', 'C'], ['A', 'B']],
+         [['A', 'D'], ['C', 'B']])
+
+# When repeating matches, try to match with least recently matched user
+run_test(['A', 'B', 'C', 'D'], [['A', 'B'], ['A', 'C'], ['A', 'B'], ['A', 'D']],
+         [['A', 'C'], ['D', 'B']])
