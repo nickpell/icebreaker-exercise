@@ -1,4 +1,9 @@
 def match(user_ids, match_history):
+    user_to_unmatched, user_to_next_match = get_unmatched_and_next_matches(user_ids, match_history)
+    return get_optimal_matches(user_to_unmatched, user_to_next_match)
+
+
+def get_unmatched_and_next_matches(user_ids, match_history):
     user_to_next_match = {user: [] for user in user_ids}
     user_to_unmatched = {user: set(user_ids) - set(user) for user in user_ids}
     for historical_match in reversed(match_history):
@@ -10,11 +15,14 @@ def match(user_ids, match_history):
         if user_1 in user_to_unmatched[user_2]:
             user_to_unmatched[user_2].remove(user_1)
             user_to_next_match[user_2].insert(0, user_1)
-        # TODO - break if each user has been matched with each other user
+    return user_to_unmatched, user_to_next_match
 
+
+def get_optimal_matches(user_to_unmatched, user_to_next_match):
     matches = []
-    users_to_match = set(user_ids)
-    users_by_most_matched = sorted(users_to_match, key=lambda user: len(user_to_next_match[user]), reverse=True)
+    users_to_match = set(user_to_next_match)
+    users_by_most_matched = sorted(user_to_next_match,
+        key=lambda user: len(user_to_next_match[user]), reverse=True)
     for next_user_to_match in users_by_most_matched:
         if next_user_to_match not in users_to_match:
             continue
@@ -28,10 +36,11 @@ def match(user_ids, match_history):
         matches.append([next_user_to_match, matched_user])
     return matches
 
-print('Given tests:')
+
+print('Given examples:')
 print(match(['A', 'B', 'C', 'D'], []))
 print(match(['A', 'B', 'C', 'D'], [['A', 'C'], ['B', 'D']]))
 print(match(['A', 'B', 'C', 'D'], [['A', 'C'], ['B', 'D'], ['A', 'B'], ['C', 'D']]))
 print(match(['A', 'B', 'C', 'D'], [['A', 'C'], ['B', 'D'], ['A', 'B'], ['C', 'D'], ['A', 'D'], ['C', 'B']]))
-print('Other tests:')
+print('Other examples:')
 print(match(['A', 'B', 'C', 'D'], [['A', 'B'], ['A', 'C']]))
