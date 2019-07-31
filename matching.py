@@ -1,3 +1,6 @@
+from collections import Counter
+
+
 def match(user_ids, match_history):
     user_to_unmatched, user_to_next_match = get_unmatched_and_next_matches(user_ids, match_history)
     return get_optimal_matches(user_to_unmatched, user_to_next_match)
@@ -5,7 +8,7 @@ def match(user_ids, match_history):
 
 def get_unmatched_and_next_matches(user_ids, match_history):
     user_to_next_match = {user: [] for user in user_ids}
-    user_to_unmatched = {user: set(user_ids) - set(user) for user in user_ids}
+    user_to_unmatched = {user: set(user_ids) - {user} for user in user_ids}
     for historical_match in reversed(match_history):
         user_1 = historical_match[0]
         user_2 = historical_match[1]
@@ -76,3 +79,17 @@ run_test(['A', 'B', 'C', 'D'], [['A', 'B'], ['A', 'C'], ['A', 'B']],
 # When repeating matches, try to match with least recently matched user
 run_test(['A', 'B', 'C', 'D'], [['A', 'B'], ['A', 'C'], ['A', 'B'], ['A', 'D']],
          [('A', 'C'), ('D', 'B')])
+
+
+def test_complete_match(num_users, debug=False):
+    user_ids = [str(i) for i in range(num_users)]
+    match_history = []
+    for i in range(num_users - 1):
+        match_history.extend(match(user_ids, match_history))
+    return match_history
+
+def test_max_pairs(num_pairs):
+    for i in range(1, num_pairs + 1):
+        assert set(Counter(test_complete_match(i * 2)).values()) == {1}
+
+test_max_pairs(10)
