@@ -39,7 +39,6 @@ def get_optimal_matches(user_to_unmatched, user_to_next_match):
         matched_user = next(filter(lambda user: user in unmatched_users, users_by_most_matched))
     else:
         matched_user = next(filter(lambda user: user in users_to_match, user_to_next_match[next_user_to_match]))
-    users_to_match.remove(matched_user)
 
     next_user_to_unmatched = {
         user: {x for x in user_to_unmatched[user] if x not in [next_user_to_match, matched_user]} for user in user_to_unmatched
