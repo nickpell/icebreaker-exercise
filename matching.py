@@ -23,6 +23,8 @@ def get_unmatched_and_next_matches(user_ids, match_history):
 
 def get_optimal_matches(user_to_unmatched, user_to_next_match):
     matches = []
+    if not user_to_unmatched:
+        return []
     users_to_match = set(user_to_next_match)
     # break ties by user id for deterministic tests
     # TODO - refactor this into helper function and use Python's mock library to guarantee
@@ -31,18 +33,24 @@ def get_optimal_matches(user_to_unmatched, user_to_next_match):
     users_by_most_matched = sorted(user_to_next_match,
         key=lambda user: (len(user_to_next_match[user]), user), reverse=True)
 
-    for next_user_to_match in users_by_most_matched:
-        if next_user_to_match not in users_to_match:
-            continue
-        users_to_match.remove(next_user_to_match)
-        unmatched_users = user_to_unmatched[next_user_to_match] & users_to_match
-        if unmatched_users:
-            matched_user = next(filter(lambda user: user in unmatched_users, users_by_most_matched))
-        else:
-            matched_user = next(filter(lambda user: user in users_to_match, user_to_next_match[next_user_to_match]))
-        users_to_match.remove(matched_user)
-        matches.append([next_user_to_match, matched_user])
-    return matches
+    next_user_to_match = users_by_most_matched[0]
+    users_to_match.remove(next_user_to_match)
+    unmatched_users = user_to_unmatched[next_user_to_match] & users_to_match
+    if unmatched_users:
+        matched_user = next(filter(lambda user: user in unmatched_users, users_by_most_matched))
+    else:
+        matched_user = next(filter(lambda user: user in users_to_match, user_to_next_match[next_user_to_match]))
+    users_to_match.remove(matched_user)
+
+    next_user_to_unmatched = {
+        user: {x for x in user_to_unmatched[user] if x not in [next_user_to_match, matched_user]} for user in user_to_unmatched
+        if user not in [next_user_to_match, matched_user]
+    }
+    next_user_to_next_match = {
+        user: [x for x in user_to_next_match[user] if x not in [next_user_to_match, matched_user]] for user in user_to_next_match
+        if user not in [next_user_to_match, matched_user]
+    }
+    return [[next_user_to_match, matched_user]] + get_optimal_matches(next_user_to_unmatched, next_user_to_next_match)
 
 
 # TODO - use Python's unittest framework
