@@ -50,7 +50,7 @@ def get_optimal_matches(user_to_unmatched, user_to_next_match):
         user: [x for x in user_to_next_match[user] if x not in [next_user_to_match, matched_user]] for user in user_to_next_match
         if user not in [next_user_to_match, matched_user]
     }
-    return [[next_user_to_match, matched_user]] + get_optimal_matches(next_user_to_unmatched, next_user_to_next_match)
+    return [(next_user_to_match, matched_user)] + get_optimal_matches(next_user_to_unmatched, next_user_to_next_match)
 
 
 # TODO - use Python's unittest framework
@@ -59,22 +59,22 @@ def run_test(user_ids, match_history, expected_matching):
 
 # Tests based on the given sequences
 run_test(['A', 'B', 'C', 'D'], [],
-         [['D', 'C'], ['B', 'A']])
+         [('D', 'C'), ('B', 'A')])
 run_test(['A', 'B', 'C', 'D'], [['D', 'C'], ['B', 'A']],
-         [['D', 'B'], ['C', 'A']])
+         [('D', 'B'), ('C', 'A')])
 run_test(['A', 'B', 'C', 'D'], [['D', 'C'], ['B', 'A'], ['D', 'B'], ['C', 'A']],
-         [['D', 'A'], ['C', 'B']])
+         [('D', 'A'), ('C', 'B')])
 run_test(['A', 'B', 'C', 'D'], [['D', 'C'], ['B', 'A'], ['D', 'B'], ['C', 'A'], ['D', 'A'], ['C', 'B']],
-         [['D', 'C'], ['B', 'A']])
+         [('D', 'C'), ('B', 'A')])
 
 # Other sequences:
 
 # Partial histories
 run_test(['A', 'B', 'C', 'D'], [['A', 'B'], ['A', 'C']],
-         [['A', 'D'], ['C', 'B']])
+         [('A', 'D'), ('C', 'B')])
 run_test(['A', 'B', 'C', 'D'], [['A', 'B'], ['A', 'C'], ['A', 'B']],
-         [['A', 'D'], ['C', 'B']])
+         [('A', 'D'), ('C', 'B')])
 
 # When repeating matches, try to match with least recently matched user
 run_test(['A', 'B', 'C', 'D'], [['A', 'B'], ['A', 'C'], ['A', 'B'], ['A', 'D']],
-         [['A', 'C'], ['D', 'B']])
+         [('A', 'C'), ('D', 'B')])
