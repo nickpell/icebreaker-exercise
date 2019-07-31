@@ -22,7 +22,6 @@ def get_unmatched_and_next_matches(user_ids, match_history):
 
 
 def get_optimal_matches(user_to_unmatched, user_to_next_match):
-    matches = []
     if not user_to_unmatched:
         return []
     users_to_match = set(user_to_next_match)
