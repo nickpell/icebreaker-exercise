@@ -81,7 +81,7 @@ run_test(['A', 'B', 'C', 'D'], [['A', 'B'], ['A', 'C'], ['A', 'B'], ['A', 'D']],
          [('A', 'C'), ('D', 'B')])
 
 
-def test_complete_match(num_users, debug=False):
+def test_complete_match(num_users):
     user_ids = [str(i) for i in range(num_users)]
     match_history = []
     for i in range(num_users - 1):
