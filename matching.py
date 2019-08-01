@@ -49,12 +49,14 @@ def get_optimal_matches(user_to_unmatched, user_to_least_recently_matched):
         for user in user_to_unmatched
         if user not in users_to_remove
     }
-    next_user_to_next_match = {
+    next_user_to_least_recently_matched = {
         user: [x for x in user_to_least_recently_matched[user] if x not in users_to_remove]
         for user in user_to_least_recently_matched
         if user not in users_to_remove
     }
-    return [(next_user_to_match, matched_user)] + get_optimal_matches(next_user_to_unmatched, next_user_to_next_match)
+    return [
+        (next_user_to_match, matched_user)
+    ] + get_optimal_matches(next_user_to_unmatched, next_user_to_least_recently_matched)
 
 
 # TODO - use Python's unittest framework
