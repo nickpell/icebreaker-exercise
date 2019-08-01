@@ -88,8 +88,12 @@ def test_complete_match(num_users):
         match_history.extend(match(user_ids, match_history))
     return match_history
 
+
 def test_max_pairs(num_pairs):
     for i in range(1, num_pairs + 1):
-        assert set(Counter(test_complete_match(i * 2)).values()) == {1}
+        complete_match_history = test_complete_match(i * 2)
+        count = Counter(complete_match_history)
+        assert set(count.values()) == {1}, count
+
 
 test_max_pairs(10)
