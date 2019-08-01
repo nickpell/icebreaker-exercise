@@ -2,8 +2,8 @@ from collections import Counter
 
 
 def match(user_ids, match_history):
-    user_to_unmatched, user_to_next_match = get_unmatched_and_next_matches(user_ids, match_history)
-    return get_optimal_matches(user_to_unmatched, user_to_next_match)
+    user_to_unmatched, user_to_least_recently_matched = get_unmatched_and_next_matches(user_ids, match_history)
+    return get_optimal_matches(user_to_unmatched, user_to_least_recently_matched)
 
 
 def get_unmatched_and_next_matches(user_ids, match_history):
